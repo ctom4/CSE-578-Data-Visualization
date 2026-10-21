@@ -1,0 +1,152 @@
+
+
+select distinct Category
+from attraction
+where upper(Category ) like '%R%'
+order by Category;
+
+
+select distinct Category
+from attraction
+where upper(Category ) like '%Ri%'
+order by Category;
+
+
+.open dinoworld.db
+.schema
+
+select c.attraction, c.visitorID, c.timestamp,  c.duration, c.type, a.Name, a.Region,  a.AttractionID, a.Category
+from checkin c
+	join attraction a
+	on c.attraction = a.AttractionID
+	and a.Category like '%Ride%'
+	and c.attraction <> 1
+	Limit 30
+
+
+select count(1)
+from checkin c
+	join attraction a
+	on c.attraction = a.AttractionID
+	and a.Category like '%Ride%'
+
+
+
+SELECT a.Name, a.AttractionID, a.Category, a.Type, 
+	AVG(CAST(substr(c.duration, 1, 2) AS INTEGER) * 3600 + CAST(substr(c.duration, 4, 2) AS INTEGER) * 60 + CAST(substr(c.duration, 7, 2) AS INTEGER)) AS average_duration_in_seconds,
+	count(1) Cnt
+	FROM checkin c 
+		JOIN attraction a 
+		ON c.attraction = a.AttractionID 
+	WHERE (a.Category LIKE '%Ride%' OR a.Type LIKE '%Ride%') 
+	AND c.duration IS NOT NULL 
+	AND CAST(substr(c.duration, 1, 2) AS INTEGER) * 3600 + CAST(substr(c.duration, 4, 2) AS INTEGER) * 60 + CAST(substr(c.duration, 7, 2) AS INTEGER) > 0
+	AND c.duration GLOB '[0-9]:[0-5][0-9]:[0-5][0-9]' 
+GROUP BY a.Name, a.Category, a.AttractionID 
+ORDER BY average_duration_in_seconds DESC
+LIMIT 2;
+
+
+SELECT a.Name, a.AttractionID, a.Category, a.Type, 
+	AVG(CAST(substr(c.duration, 1, 2) AS INTEGER) * 3600 + CAST(substr(c.duration, 4, 2) AS INTEGER) * 60 + CAST(substr(c.duration, 7, 2) AS INTEGER)) AS average_duration_in_seconds,
+	count(1) Cnt,
+	min(c.duration), max(c.duration), min(c.type), max(c.type)
+	FROM checkin c 
+		JOIN attraction a 
+		ON c.attraction = a.AttractionID 
+	WHERE (a.Category LIKE '%Ride%' OR a.Type LIKE '%Ride%') 
+	AND c.duration IS NOT NULL 
+	AND CAST(substr(c.duration, 1, 2) AS INTEGER) * 3600 + CAST(substr(c.duration, 4, 2) AS INTEGER) * 60 + CAST(substr(c.duration, 7, 2) AS INTEGER) > 0
+	AND c.duration GLOB '[0-9]:[0-5][0-9]:[0-5][0-9]' 
+	AND c.type = 'actual'
+GROUP BY a.Name, a.Category, a.AttractionID 
+ORDER BY average_duration_in_seconds DESC
+LIMIT 2;
+
+
+SELECT a.Name, a.AttractionID, a.Category, a.Type, 
+	AVG(CAST(substr(c.duration, 1, 2) AS INTEGER) * 3600 + CAST(substr(c.duration, 4, 2) AS INTEGER) * 60 + CAST(substr(c.duration, 7, 2) AS INTEGER)) AS average_duration_in_seconds,
+	count(1) Cnt,
+	min(c.duration), max(c.duration), min(c.type), max(c.type)
+	FROM checkin c 
+		JOIN attraction a 
+		ON c.attraction = a.AttractionID 
+	WHERE (a.Category LIKE '%Ride%' OR a.Type LIKE '%Ride%') 
+	GROUP BY a.Name, a.Category, a.AttractionID 
+ORDER BY average_duration_in_seconds DESC
+LIMIT 2;
+
+
+select distinct duration, CAST(substr(c.duration, 1, 1) AS INTEGER) * 3600 + CAST(substr(c.duration, 3, 2) AS INTEGER) * 60 + CAST(substr(c.duration, 6, 2) AS INTEGER) 
+from checkin c
+where attraction = 81
+order by 2 desc
+
+
+
+select distinct duration,	 
+	CAST(substr(duration, 1, instr(duration, ':') - 1) AS INTEGER) AS hour,
+ 	CAST(substr(duration, instr(duration, ':') + 1, 2) AS INTEGER) AS minute,
+   	CAST(substr(duration, instr(duration, ':'), instr(duration, ':') + 1) + 1, 2) AS INTEGER) AS second
+
+
+from checkin c
+where attraction = 81
+order by 2 
+
+
+
+
+select distinct duration,	 
+	CAST(substr(duration, 1, instr(duration, ':') - 1) AS INTEGER) * 3600 +	CAST(substr(duration, instr(duration, ':') + 1, 2) AS INTEGER) * 60 + CAST(substr(duration, length(duration)-1, 2) AS INTEGER) ur
+from checkin c
+where attraction = 81
+order by 2 
+
+
+
+SELECT 
+    CAST(substr(duration, 1, instr(duration, ':') - 1) AS INTEGER) AS hour,
+    CAST(substr(duration, instr(duration, ':') + 1, 2) AS INTEGER) AS minute,
+    CAST(substr(duration, instr(duration, ':', instr(duration, ':') + 1) + 1, 2) AS INTEGER) AS second
+FROM your_table_name;
+
+
+
+
+
+SELECT a.Name, a.AttractionID, a.Category, a.Type, 
+	AVG(CAST(substr(duration, 1, instr(duration, ':') - 1) AS INTEGER) * 3600 
+		+ CAST(substr(duration, instr(duration, ':') + 1, 2) AS INTEGER) * 60 
+		+ CAST(substr(duration, length(duration)-1, 2) AS INTEGER) ) AS average_duration_in_seconds,
+	count(1) Cnt,
+	min(c.duration), max(c.duration), min(c.type), max(c.type)
+	FROM checkin c 
+		JOIN attraction a 
+		ON c.attraction = a.AttractionID 
+	WHERE (a.Category LIKE '%Ride%' OR a.Type LIKE '%Ride%') 
+	AND c.duration IS NOT NULL 
+	AND c.duration GLOB '[0-9]:[0-5][0-9]:[0-5][0-9]'
+	AND CAST(substr(duration, 1, instr(duration, ':') - 1) AS INTEGER) * 3600 
+		+ CAST(substr(duration, instr(duration, ':') + 1, 2) AS INTEGER) * 60 
+		+ CAST(substr(duration, length(duration)-1, 2) AS INTEGER) > 0 
+	GROUP BY a.Name, a.Category, a.AttractionID 
+ORDER BY average_duration_in_seconds DESC
+LIMIT 2;
+
+
+
+
+AND c.duration GLOB '[0-9]:[0-5][0-9]:[0-5][0-9]' 
+AND c.duration like '[0-9]:[0-5][0-9]:[0-5][0-9]' 
+
+
+select c.*
+FROM checkin c 
+		JOIN attraction a 
+		ON c.attraction = a.AttractionID
+	WHERE (a.Category LIKE '%Ride%' OR a.Type LIKE '%Ride%') 
+	AND c.duration GLOB '[0-9]:[0-5][0-9]:[0-5][0-9]' 
+	AND CAST(substr(c.duration, 1, 2) AS INTEGER) * 3600 + CAST(substr(c.duration, 4, 2) AS INTEGER) * 60 + CAST(substr(c.duration, 7, 2) AS INTEGER) > 0
+	LIMIT 10
+
